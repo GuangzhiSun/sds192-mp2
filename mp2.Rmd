@@ -71,10 +71,13 @@ party_2012 <- can_contri_2012 %>%
 glimpse(can_contri_2012)
 glimpse(party_2012)
 
+```
+
+```{r}
 #plot the amount of transactions given to two parties in 2012 
-
-
-
+ggplot(party_2012, aes(x=cand_party_affiliation, y= party_trans, fill = cand_party_affiliation)) + geom_bar(stat = "identity", width = 0.3) +
+  scale_x_discrete(name='Party Affiliation')+
+  scale_y_continuous(name='Transactions', labels = scales::scientific)
 
 ```
 
