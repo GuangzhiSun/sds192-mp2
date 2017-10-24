@@ -1,6 +1,6 @@
 ---
 title: "Mini-Project 2"
-author: "Your Name Here"
+author: "Chujun He, "
 date: "October 31, 2017"
 output: html_document
 ---
@@ -8,11 +8,89 @@ output: html_document
 
 ## Loading the data
 
-This project is so interesting and relevant to my life! This class.
+This project is so interesting and relevant to my life! 
 
 ```{r, include=FALSE}
+library(dplyr)
+library(tidyr)
+library(ggplot2)
 load("house_elections.rda")
 load("candidates.rda")
 load("committees.rda")
 load("contributions.rda")
 ```
+
+```{r}
+glimpse(house_elections)
+
+```
+
+
+```{r}
+glimpse(candidates)
+
+```
+
+
+By observing the contribution data frame, we find that most of transaction dates are in 2011 and 2012. Thus, we suppose that the contributions will be most relevant to the election in 2012. 
+
+#can add some information about type of transaction
+
+```{r}
+
+#select certain columns, only need the information we want
+#only keep candidates whose election year is 2012
+#only examine the Republican party and Democratic party
+candidate_2012 <- candidates %>%
+  select(cand_id,cand_name,cand_party_affiliation,cand_election_yr,cand_state) %>%
+  filter(cand_election_yr == '2012', cand_party_affiliation == 'REP'|cand_party_affiliation == 'DEM')
+
+glimpse(candidate_2012)
+
+#select certain columns, only need the information we want
+#only donsider 24A type transaction, which is directly used to support the candidates
+#calculate total transaction amount given to a candidate
+contributions_24a <- contributions %>%
+  filter(transaction_type == "24A") %>%
+  select(name,transaction_amt,cand_id,state) %>% 
+  group_by(cand_id) %>% 
+  summarize(total_trans = sum(transaction_amt))
+glimpse(contributions_24a)
+
+
+#join two data frames 
+can_contri_2012 <- candidate_2012 %>% left_join(contributions_24a, by = 'cand_id')
+#filter out NA values in total_trans
+can_contri_2012 <- can_contri_2012 %>% filter(!is.na(total_trans))
+
+#calculate the total amount of transactions to a party
+party_2012 <- can_contri_2012 %>% 
+  group_by(cand_party_affiliation) %>% 
+  summarize(party_trans = sum(total_trans))
+
+glimpse(can_contri_2012)
+glimpse(party_2012)
+
+#plot the amount of transactions given to two parties in 2012 
+
+
+
+
+```
+
+
+```{r}
+glimpse(committees)
+
+
+```
+
+```{r}
+glimpse(contributions)
+
+contributions %>% select(transaction_dt)
+```
+
+
+
+
