@@ -20,6 +20,23 @@ load("committees.rda")
 load("contributions.rda")
 ```
 
+
+```{r}
+
+# calculate the amount of Republican and Democratic winners in elections
+win_2012 <- house_elections %>% 
+  select(candidate_name, party,general_votes,ge_winner)%>%
+  filter(party== "R" | party == 'D') %>% 
+  group_by(party) %>% 
+  filter(ge_winner == 'W') %>% 
+  summarize(winner_amt = n())
+
+glimpse(win_2012)
+```
+
+
+
+
 ```{r}
 glimpse(house_elections)
 
@@ -74,12 +91,17 @@ glimpse(party_2012)
 ```
 
 ```{r}
-#plot the amount of transactions given to two parties in 2012 
+#plot the amount of transactions given to two parties from 2011 to 2012 
 ggplot(party_2012, aes(x=cand_party_affiliation, y= party_trans, fill = cand_party_affiliation)) + geom_bar(stat = "identity", width = 0.3) +
   scale_x_discrete(name='Party Affiliation')+
-  scale_y_continuous(name='Transactions', labels = scales::scientific)
+  scale_y_continuous(name='Transactions', labels = scales::scientific) +
+  ggtitle('Total Amount of Transactions to 2 Parties from 2011 to 2012')
 
 ```
+
+
+
+
 
 
 ```{r}
