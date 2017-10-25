@@ -113,12 +113,18 @@ party_state_trans <- function(input_data,input_party){
 
 # Republican received how much transactions in each state
 rep_state_tran <- party_state_trans(can_contri_2012,'REP')
+#rename the column
+rep_state_tran$cand_tran_rep <- rep_state_tran$cand_tran
+rep_state_tran$cand_tran <- NULL
 glimpse(rep_state_tran)
 # Demoncratic received how much transactions in each state
 dem_state_tran <- party_state_trans(can_contri_2012,'DEM')
+#rename the column
+dem_state_tran$cand_tran_dem <- dem_state_tran$cand_tran
+dem_state_tran$cand_tran <- NULL
 glimpse(dem_state_tran)
 
-two_states_tran <- rep_state_tran %>% left_join(dem_state_tran, by = 'cand_state')
+two_states_tran <- rep_state_tran %>% full_join(dem_state_tran, by = 'cand_state')
 
 glimpse(two_states_tran)
 
@@ -129,6 +135,39 @@ glimpse(two_states_tran)
 ```{r}
 glimpse(committees)
 
+```
+
+
+
+#Guangzhi: Use this data fram to plot  - From Chujun
+```{r}
+
+# select certain columns in committees data frame
+comi_can <- committees %>% 
+  select(cmte_id, cmte_name, cmte_party_affiliation, cand_id)
+
+glimpse(comi_can)
+glimpse(can_contri_2012)
+
+# join two data frams
+New_comi_can <- comi_can %>% full_join(can_contri_2012, by = 'cand_id')
+
+# select certain columns and filter out NA values of transactions amounts
+# arrange the total trans from most to least 
+New_comi_can <- New_comi_can %>% 
+  filter(!is.na(total_trans), cmte_party_affiliation == 'REP' | cmte_party_affiliation == 'DEM') %>%   arrange(desc(total_trans))
+
+
+glimpse(New_comi_can)
+
+
+
+
+
+
+```
+
+```{r}
 
 ```
 
