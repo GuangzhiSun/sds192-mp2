@@ -100,7 +100,7 @@ glimpse(win_2012)
 
 
 ```{r}
-# function that calculates how much transactions does a party received in each state
+# function that calculates how much transactions did a party receive in each state
 # arrange the data by the amount of transactions
 party_state_trans <- function(input_data,input_party){
   input_data %>% 
