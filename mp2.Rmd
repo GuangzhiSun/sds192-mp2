@@ -21,21 +21,6 @@ load("contributions.rda")
 ```
 
 
-```{r}
-
-# calculate the amount of Republican and Democratic winners in elections
-win_2012 <- house_elections %>% 
-  select(candidate_name, party,general_votes,ge_winner)%>%
-  filter(party== "R" | party == 'D') %>% 
-  group_by(party) %>% 
-  filter(ge_winner == 'W') %>% 
-  summarize(winner_amt = n())
-
-glimpse(win_2012)
-```
-
-
-
 
 ```{r}
 glimpse(house_elections)
@@ -93,14 +78,51 @@ glimpse(party_2012)
 ```{r}
 #plot the amount of transactions given to two parties from 2011 to 2012 
 ggplot(party_2012, aes(x=cand_party_affiliation, y= party_trans, fill = cand_party_affiliation)) + geom_bar(stat = "identity", width = 0.3) +
-  scale_x_discrete(name='Party Affiliation')+
-  scale_y_continuous(name='Transactions', labels = scales::scientific) +
-  ggtitle('Total Amount of Transactions to 2 Parties from 2011 to 2012')
+  scale_x_discrete(name='Party', label = c('Democratic', 'Republican'))+
+  scale_y_continuous(name='Transactions', labels = scales::comma) +
+  ggtitle('Total Amount of Received Transactions from 2011 to 2012')
 
 ```
 
+```{r}
+glimpse(house_elections)
+
+# calculate the amount of Republican and Democratic winners in elections
+win_2012 <- house_elections %>% 
+  select(candidate_name, party,general_votes,ge_winner)%>%
+  filter(party== "R" | party == 'D') %>% 
+  group_by(party) %>% 
+  filter(ge_winner == 'W') %>% 
+  summarize(winner_amt = n())
+
+glimpse(win_2012)
+```
 
 
+```{r}
+# function that calculates how much transactions does a party received in each state
+# arrange the data by the amount of transactions
+party_state_trans <- function(input_data,input_party){
+  input_data %>% 
+    filter(cand_party_affiliation == input_party) %>%
+    group_by(cand_state) %>% 
+    summarize(cand_tran = sum(total_trans)) %>% 
+    filter(!is.na(cand_state)) %>%
+    arrange(desc(cand_tran))
+  }
+
+# Republican received how much transactions in each state
+rep_state_tran <- party_state_trans(can_contri_2012,'REP')
+glimpse(rep_state_tran)
+# Demoncratic received how much transactions in each state
+dem_state_tran <- party_state_trans(can_contri_2012,'DEM')
+glimpse(dem_state_tran)
+
+two_states_tran <- rep_state_tran %>% left_join(dem_state_tran, by = 'cand_state')
+
+glimpse(two_states_tran)
+
+```
 
 
 
@@ -113,7 +135,7 @@ glimpse(committees)
 ```{r}
 glimpse(contributions)
 
-contributions %>% select(transaction_dt)
+
 ```
 
 
