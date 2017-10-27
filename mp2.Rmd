@@ -50,18 +50,18 @@ candidate_2012 <- candidates %>%
 glimpse(candidate_2012)
 
 #select certain columns, only need the information we want
-#only donsider 24A type transaction, which is directly used to support the candidates
+#only donsider 24E type transaction, which is directly used to support the candidates
 #calculate total transaction amount given to a candidate
-contributions_24a <- contributions %>%
-  filter(transaction_type == "24A") %>%
+contributions_24e <- contributions %>%
+  filter(transaction_type == "24E") %>%
   select(name,transaction_amt,cand_id,state) %>% 
   group_by(cand_id) %>% 
   summarize(total_trans = sum(transaction_amt))
-glimpse(contributions_24a)
+glimpse(contributions_24e)
 
 
 #join two data frames 
-can_contri_2012 <- candidate_2012 %>% left_join(contributions_24a, by = 'cand_id')
+can_contri_2012 <- candidate_2012 %>% left_join(contributions_24e, by = 'cand_id')
 #filter out NA values in total_trans
 can_contri_2012 <- can_contri_2012 %>% filter(!is.na(total_trans))
 
@@ -76,7 +76,7 @@ glimpse(party_2012)
 ```
 
 ```{r}
-#plot the amount of transactions given to two parties from 2011 to 2012 
+#plot the amount of transactions given to support elections of two parties from 2011 to 2012 
 ggplot(party_2012, aes(x=cand_party_affiliation, y= party_trans, fill = cand_party_affiliation)) + geom_bar(stat = "identity", width = 0.3) +
   scale_x_discrete(name='Party', label = c('Democratic', 'Republican'))+
   scale_y_continuous(name='Transactions', labels = scales::comma) +
