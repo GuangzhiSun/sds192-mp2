@@ -80,7 +80,7 @@ glimpse(party_2012)
 ggplot(party_2012, aes(x=cand_party_affiliation, y= party_trans, fill = cand_party_affiliation)) + geom_bar(stat = "identity", width = 0.3) +
   scale_x_discrete(name='Party', label = c('Democratic', 'Republican'))+
   scale_y_continuous(name='Transactions', labels = scales::comma) +
-  ggtitle('Total Amount of Received Transactions from 2011 to 2012')
+  ggtitle('Total Amount of Received 24E Transactions from 2011 to 2012')
 
 ```
 
