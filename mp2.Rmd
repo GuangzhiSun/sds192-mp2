@@ -84,6 +84,8 @@ ggplot(party_2012, aes(x=cand_party_affiliation, y= party_trans, fill = cand_par
 
 ```
 
+In the United States presidential election of 2012, the Democratic nominee, incumbent President Barack Obama was elected to a second term, defeating the Republican nominee, former Governor of Massachusetts Mitt Romney. Intutively, the more transactions given to support elections of a party, the higher chance that the donation can be used to support the party to win the election. However, the nominee of Democratic party, Barack Obama, won the election with less transactions.
+
 ```{r}
 glimpse(house_elections)
 
@@ -130,7 +132,7 @@ glimpse(two_states_tran)
 
 ```
 
-
+Barack Obama's home state was Illinois, while Mitt Romney's home state was Massachusetts. By observing the candidate data frame, we find that Obama and Romney received the highest donation in their home state: Illinois (28347736) and Massachusetts (70528037) respectivcely; and that Republic party won deomate at home state as twice much as democartic party did. This may help to explain that democratic party had less amount of donation in general. We consider that is there any other factors contribute to winning election. Thus, we suppose that the other factors will may be relevant to the election in 2012. 
 
 ```{r}
 glimpse(committees)
@@ -168,7 +170,7 @@ glimpse(New_comi_can)
 ```
 
 ```{r}
-
+str(New_comi_can)
 ```
 
 ```{r}
