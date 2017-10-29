@@ -5,15 +5,12 @@ date: "October 31, 2017"
 output: html_document
 ---
 
-
-## Loading the data
-
-This project is so interesting and relevant to my life! 
-
 ```{r, include=FALSE}
 library(dplyr)
 library(tidyr)
 library(ggplot2)
+library(ggthemes)
+library(scales)
 load("house_elections.rda")
 load("candidates.rda")
 load("committees.rda")
@@ -21,163 +18,113 @@ load("contributions.rda")
 ```
 
 
-
-```{r}
-glimpse(house_elections)
-
-```
-
-
-```{r}
-glimpse(candidates)
-
-```
-
+###Data Wrangling
 
 By observing the contribution data frame, we find that most of transaction dates are in 2011 and 2012. Thus, we suppose that the contributions will be most relevant to the election in 2012. 
 
-#can add some information about type of transaction
-
-```{r}
-
-#select certain columns, only need the information we want
-#only keep candidates whose election year is 2012
-#only examine the Republican party and Democratic party
-candidate_2012 <- candidates %>%
-  select(cand_id,cand_name,cand_party_affiliation,cand_election_yr,cand_state) %>%
-  filter(cand_election_yr == '2012', cand_party_affiliation == 'REP'|cand_party_affiliation == 'DEM')
-
-glimpse(candidate_2012)
-
-#select certain columns, only need the information we want
-#only donsider 24E type transaction, which is directly used to support the candidates
-#calculate total transaction amount given to a candidate
-contributions_24e <- contributions %>%
-  filter(transaction_type == "24E") %>%
-  select(name,transaction_amt,cand_id,state) %>% 
-  group_by(cand_id) %>% 
-  summarize(total_trans = sum(transaction_amt))
-glimpse(contributions_24e)
-
-
-#join two data frames 
-can_contri_2012 <- candidate_2012 %>% left_join(contributions_24e, by = 'cand_id')
-#filter out NA values in total_trans
-can_contri_2012 <- can_contri_2012 %>% filter(!is.na(total_trans))
-
-#calculate the total amount of transactions to a party
-party_2012 <- can_contri_2012 %>% 
-  group_by(cand_party_affiliation) %>% 
-  summarize(party_trans = sum(total_trans))
-
-glimpse(can_contri_2012)
-glimpse(party_2012)
-
+```{r,message=FALSE}
+ #select certain columns, only need the information we want
+ #only keep candidates whose election year is 2012
+ #only examine the Republican party and Democratic party
+ candidate_2012 <- candidates %>%
+   select(cand_id,cand_name,cand_party_affiliation,cand_election_yr,cand_state) %>%
+   filter(cand_election_yr == '2012', cand_party_affiliation == 'REP'|cand_party_affiliation == 'DEM')
+ 
+ 
+ #select certain columns, only need the information we want
+ #only donsider 24E type transaction, which is directly used to support the candidates
+ #calculate total transaction amount given to a candidate
+ contributions_24e <- contributions %>%
+   filter(transaction_type == "24E") %>%
+   select(name,transaction_amt,cand_id,state) %>% 
+   group_by(cand_id) %>% 
+   summarize(total_trans = sum(transaction_amt))
+ 
+ 
+ #join two data frames 
+ can_contri_2012 <- candidate_2012 %>% left_join(contributions_24e, by = 'cand_id')
+ #filter out NA values in total_trans
+ can_contri_2012 <- can_contri_2012 %>% filter(!is.na(total_trans))
+ 
+ #calculate the total amount of transactions to a party
+ party_2012 <- can_contri_2012 %>% 
+   group_by(cand_party_affiliation) %>% 
+   summarize(party_trans = sum(total_trans))
 ```
-
-```{r}
+### Plot the graph
+```{r,message=FALSE}
 #plot the amount of transactions given to support elections of two parties from 2011 to 2012 
 ggplot(party_2012, aes(x=cand_party_affiliation, y= party_trans, fill = cand_party_affiliation)) + geom_bar(stat = "identity", width = 0.3) +
   scale_x_discrete(name='Party', label = c('Democratic', 'Republican'))+
   scale_y_continuous(name='Transactions', labels = scales::comma) +
-  ggtitle('Total Amount of Received 24E Transactions from 2011 to 2012')
-
+  ggtitle('Total Amount of Received 24E Transactions from 2011 to 2012')+
+  scale_fill_manual(values = c('blue', 'red'))
 ```
 
+
+###Our analysis and bg information:
+**Republic recevied more transactions than Democratic in 2012.**
 In the United States presidential election of 2012, the Democratic nominee, incumbent President Barack Obama was elected to a second term, defeating the Republican nominee, former Governor of Massachusetts Mitt Romney. Intutively, the more transactions given to support elections of a party, the higher chance that the donation can be used to support the party to win the election. However, the nominee of Democratic party, Barack Obama, won the election with less transactions.
 
-```{r}
-glimpse(house_elections)
 
-# calculate the amount of Republican and Democratic winners in elections
-win_2012 <- house_elections %>% 
-  select(candidate_name, party,general_votes,ge_winner)%>%
-  filter(party== "R" | party == 'D') %>% 
-  group_by(party) %>% 
-  filter(ge_winner == 'W') %>% 
-  summarize(winner_amt = n())
-
-glimpse(win_2012)
-```
-
-
-```{r}
+### Data Wrangling
+```{r,message=FALSE}
 # function that calculates how much transactions did a party receive in each state
 # arrange the data by the amount of transactions
-party_state_trans <- function(input_data,input_party){
-  input_data %>% 
-    filter(cand_party_affiliation == input_party) %>%
-    group_by(cand_state) %>% 
-    summarize(cand_tran = sum(total_trans)) %>% 
-    filter(!is.na(cand_state)) %>%
-    arrange(desc(cand_tran))
-  }
-
+ party_state_trans <- function(input_data,input_party){
+   input_data %>% 
+     filter(cand_party_affiliation == input_party) %>%
+     group_by(cand_state) %>% 
+     summarize(cand_tran = sum(total_trans)) %>% 
+     filter(!is.na(cand_state)) %>%
+     arrange(desc(cand_tran))
+   }
+ 
 # Republican received how much transactions in each state
 rep_state_tran <- party_state_trans(can_contri_2012,'REP')
 #rename the column
 rep_state_tran$cand_tran_rep <- rep_state_tran$cand_tran
 rep_state_tran$cand_tran <- NULL
-glimpse(rep_state_tran)
+
 # Demoncratic received how much transactions in each state
 dem_state_tran <- party_state_trans(can_contri_2012,'DEM')
 #rename the column
 dem_state_tran$cand_tran_dem <- dem_state_tran$cand_tran
 dem_state_tran$cand_tran <- NULL
-glimpse(dem_state_tran)
-
+ 
 two_states_tran <- rep_state_tran %>% full_join(dem_state_tran, by = 'cand_state')
 
-glimpse(two_states_tran)
+#Wrangle the dataset to draw graph
+Party_state <- two_states_tran %>%
+  gather(key = "Party", value = "contributions",-cand_state) %>%
+  group_by(cand_state)
+
+# Look at the states where the contributions are greater than or equal to 1000000 (relatively large)
+G_Party_state <- Party_state %>%
+  filter(contributions >= 1000000) %>%
+  filter(cand_state != '')
+```
+
+### Plot Data
+```{r,message=FALSE}
+#Draw the graph
+my_plot <- ggplot(G_Party_state, aes(x = Party, y = contributions, fill = Party)) +
+  geom_bar(stat = 'identity') + 
+  scale_fill_manual(values = c('blue', 'red')) +
+  scale_y_continuous(name='Transactions', labels = scales::comma) +
+  scale_x_discrete(name='Party', label = c('DEM', 'REP'))+
+  theme(axis.text.x = element_text(angle = 70,hjust = 1))+
+  ggtitle('The Amount of Large Received Transactions to Support Elections by DEM and REP')+
+  facet_wrap(~cand_state, ncol = 10)
+
+my_plot
 
 ```
 
-Barack Obama's home state was Illinois, while Mitt Romney's home state was Massachusetts. By observing the candidate data frame, we find that Obama and Romney received the highest donation in their home state: Illinois (28347736) and Massachusetts (70528037) respectivcely; and that Republic party won deomate at home state as twice much as democartic party did. This may help to explain that democratic party had less amount of donation in general. We consider that is there any other factors contribute to winning election. Thus, we suppose that the other factors will may be relevant to the election in 2012. 
+###Analysis and BG Info:
+**Candidates usually received large amount of money in their home states.**
+Barack Obama's(Deomoncratic Candidate) home state was Illinois, while Mitt Romney's(Republican Candidate) home state was Massachusetts. By observing the candidate data frame, we find that Obama and Romney received the highest donation in their home state: Illinois (28347736) and Massachusetts (70528037) respectivcely; and that Republic party won deomate at home state as twice much as democartic party did. This may help to explain that democratic party had less amount of donation in general. We consider that is there any other factors contribute to winning election. Thus, we suppose that the other factors will may be relevant to the election in 2012.
 
-```{r}
-glimpse(committees)
-
-```
-
-
-
-#Guangzhi: Use this data fram to plot  - From Chujun
-```{r}
-
-# select certain columns in committees data frame
-comi_can <- committees %>% 
-  select(cmte_id, cmte_name, cmte_party_affiliation, cand_id)
-
-glimpse(comi_can)
-glimpse(can_contri_2012)
-
-# join two data frams
-New_comi_can <- comi_can %>% full_join(can_contri_2012, by = 'cand_id')
-
-# select certain columns and filter out NA values of transactions amounts
-# arrange the total trans from most to least 
-New_comi_can <- New_comi_can %>% 
-  filter(!is.na(total_trans), cmte_party_affiliation == 'REP' | cmte_party_affiliation == 'DEM') %>%   arrange(desc(total_trans))
-
-
-glimpse(New_comi_can)
-
-
-
-
-
-
-```
-
-```{r}
-str(New_comi_can)
-```
-
-```{r}
-glimpse(contributions)
-
-
-```
 
 
 
