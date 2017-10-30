@@ -17,7 +17,6 @@ load("committees.rda")
 load("contributions.rda")
 ```
 
-
 ###Data Wrangling
 
 By observing the contribution data frame, we find that most of transaction dates are in 2011 and 2012. Thus, we suppose that the contributions will be most relevant to the election in 2012. 
@@ -30,35 +29,50 @@ By observing the contribution data frame, we find that most of transaction dates
    select(cand_id,cand_name,cand_party_affiliation,cand_election_yr,cand_state) %>%
    filter(cand_election_yr == '2012', cand_party_affiliation == 'REP'|cand_party_affiliation == 'DEM')
  
- 
- #select certain columns, only need the information we want
- #only donsider 24E type transaction, which is directly used to support the candidates
- #calculate total transaction amount given to a candidate
- contributions_24e <- contributions %>%
-   filter(transaction_type == "24E") %>%
-   select(name,transaction_amt,cand_id,state) %>% 
-   group_by(cand_id) %>% 
-   summarize(total_trans = sum(transaction_amt))
- 
- 
- #join two data frames 
- can_contri_2012 <- candidate_2012 %>% left_join(contributions_24e, by = 'cand_id')
- #filter out NA values in total_trans
- can_contri_2012 <- can_contri_2012 %>% filter(!is.na(total_trans))
- 
- #calculate the total amount of transactions to a party
- party_2012 <- can_contri_2012 %>% 
-   group_by(cand_party_affiliation) %>% 
-   summarize(party_trans = sum(total_trans))
+# function that calculate how much certain type transactions did DEM/REP receive
+  party_type_2012 <- function(input_type_1,input_2){
+   contributions %>% 
+     filter(transaction_type == input_type_1 | transaction_type == input_2) %>%   #only consider certain type transaction, which is directly used to support/oppose the candidates
+      select(name,transaction_amt,cand_id,state) %>% #select certain columns, only need the information we want
+      group_by(cand_id) %>% 
+      summarize(total_trans = sum(transaction_amt)) %>%  #calculate total transaction amount given to a candidate
+      right_join(candidate_2012, by ='cand_id') %>%  #join two data frames 
+      filter(!is.na(total_trans)) %>%  #filter out NA values in total_trans
+      group_by(cand_party_affiliation)%>% 
+      summarize(party_trans = sum(total_trans))  #calculate the total amount of transactions to a party
+  }
+
+# 24E type transactions given to DEM/REP
+party_24E_2012 <- party_type_2012('24E','')
+# 24A type transactions given to DEM/REP
+party_24A_2012 <- party_type_2012('24A','')
+# Sum of 24E and 24A type transactions given to DEM/REP
+party_24AE_2012 <- party_type_2012('24A','24E')
 ```
+
 ### Plot the graph
 ```{r,message=FALSE}
-#plot the amount of transactions given to support elections of two parties from 2011 to 2012 
-ggplot(party_2012, aes(x=cand_party_affiliation, y= party_trans, fill = cand_party_affiliation)) + geom_bar(stat = "identity", width = 0.3) +
-  scale_x_discrete(name='Party', label = c('Democratic', 'Republican'))+
-  scale_y_continuous(name='Transactions', labels = scales::comma) +
-  ggtitle('Total Amount of Received 24E Transactions from 2011 to 2012')+
-  scale_fill_manual(values = c('blue', 'red'))
+#function that plot certain type transactions given to support elections of two parties from 2011 to 2012
+my_plot <- function(input_data){
+   ggplot(input_data, aes(x=cand_party_affiliation, y= party_trans, fill = cand_party_affiliation)) +
+    geom_bar(stat = "identity", width = 0.3) +
+    scale_x_discrete(name='Party', label = c('Democratic', 'Republican'))+
+    scale_y_continuous(name='Transactions', labels = scales::comma) +
+    scale_fill_manual(values = c('blue', 'red'))
+}
+
+my_24E_plot <- my_plot(party_24E_2012) + ggtitle('Total Amount of Received 24E Transactions from 2011 to 2012')
+my_24E_plot
+```
+
+```{r, message=FALSE}
+my_24A_plot <- my_plot(party_24A_2012) + ggtitle('Total Amount of Received 24A Transactions from 2011 to 2012')
+my_24A_plot
+```
+
+```{r,message=FALSE}
+my_24AE_plot <- my_plot(party_24AE_2012) + ggtitle('Total Amount of Received 24A/24E Transactions from 2011 to 2012')
+my_24AE_plot
 ```
 
 
