@@ -65,16 +65,20 @@ my_24E_plot <- my_plot(party_24E_2012) + ggtitle('Total Amount of Received 24E T
 my_24E_plot
 ```
 
+Firstly, the figure of independent expenditure of advocating election of candidate shows that Democratic party reveived less donations than republic party sigificantly. As we assumed, the more donation a party receives, the more likelihood it will win. Since the Obama won the election, we naturally need to draw a big picture to include donation from other channels. 
+
 ```{r, message=FALSE}
 my_24A_plot <- my_plot(party_24A_2012) + ggtitle('Total Amount of Received 24A Transactions from 2011 to 2012')
 my_24A_plot
 ```
 
+secondly, the figure of independent expenditure of oppising election of candidate shows that Democratic party collected much higher level of donations than republic party did. This result coincides with our assumption.
+
 ```{r,message=FALSE}
 my_24AE_plot <- my_plot(party_24AE_2012) + ggtitle('Total Amount of Received 24A/24E Transactions from 2011 to 2012')
 my_24AE_plot
 ```
-
+Adding those two parts - independent expenditure of oppising and advocating election of candidate - together, democratic pary outweights republic party in terms of fundrising. we confirm our assumption that the more donation a party receives, the more likelihood it will win.
 
 ###Our analysis and bg information:
 **Republic recevied more transactions than Democratic in 2012.**
