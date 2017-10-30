@@ -1,6 +1,6 @@
 ---
 title: "Mini-Project 2"
-author: "Chujun He, Xuxi Ding "
+author: "Chujun He, Xuxi Ding, Guangzhi Sun "
 date: "October 31, 2017"
 output: html_document
 ---
@@ -65,25 +65,23 @@ my_24E_plot <- my_plot(party_24E_2012) + ggtitle('Total Amount of Received 24E T
 my_24E_plot
 ```
 
-Firstly, the figure of independent expenditure of advocating election of candidate shows that Democratic party reveived less donations than republic party sigificantly. As we assumed, the more donation a party receives, the more likelihood it will win. Since the Obama won the election, we naturally need to draw a big picture to include donation from other channels. 
+
+
+(24E type transactions:  Independent expenditure advocating election of candidate)
 
 ```{r, message=FALSE}
 my_24A_plot <- my_plot(party_24A_2012) + ggtitle('Total Amount of Received 24A Transactions from 2011 to 2012')
 my_24A_plot
 ```
 
-secondly, the figure of independent expenditure of oppising election of candidate shows that Democratic party collected much higher level of donations than republic party did. This result coincides with our assumption.
+
+(24A type transactions: Independent expenditure opposing election of candidate)
+
 
 ```{r,message=FALSE}
 my_24AE_plot <- my_plot(party_24AE_2012) + ggtitle('Total Amount of Received 24A/24E Transactions from 2011 to 2012')
 my_24AE_plot
 ```
-Adding those two parts - independent expenditure of oppising and advocating election of candidate - together, democratic pary outweights republic party in terms of fundrising. we confirm our assumption that the more donation a party receives, the more likelihood it will win.
-
-###Our analysis and bg information:
-**Democratic recevied more transactions than Republic in 2012.**
-In the United States presidential election of 2012, the Democratic nominee, incumbent President Barack Obama was elected to a second term, defeating the Republican nominee, former Governor of Massachusetts Mitt Romney. Intutively, the more transactions given to support elections of a party, the higher chance that the donation can be used to support the party to win the election. However, the nominee of Democratic party, Barack Obama, won the election with less transactions.
-
 
 ### Data Wrangling
 ```{r,message=FALSE}
@@ -155,13 +153,16 @@ my_plot
 ```
 
 ###Analysis and BG Info:
-**Candidates usually received large amount of money in their home states.**
-Barack Obama's(Deomoncratic Candidate) home state was Illinois, while Mitt Romney's(Republican Candidate) home state was Massachusetts. By observing the candidate data frame, we find that Obama and Romney received the highest donation in their home state: Illinois (28347736) and Massachusetts (70528037) respectivcely; and that Republic party won deomate at home state as twice much as democartic party did. This may help to explain that democratic party had less amount of donation in general. We consider that is there any other factors contribute to winning election. Thus, we suppose that the other factors will may be relevant to the election in 2012.
+**Political candidates usually declare that money does not matter, yet the opposite is true. The influence of money in politics is in fact huge.**
 
-The United States presidential election of 2012 broke new records in fundraising. Through grassroots campaign contributions, online donations, and Super PACs, Obama won significant higher amount of small individual contributions than Romney did. 
+In this mini-project, we find that a party or a candidate that out-fundraised its opponent is more likely to win campaigns. In other words, a winning party or candidate outspent its opponents.
+(Theoretically, there are a variety of reasons for why the better-financed candidates are more likely to win. In many cases, the candidates who win the most votes do so-base on the same electability, popularity and qualifications that make them the best at fundraising.)
 
-#Note: The exact fact is: Obama won more donations than Romney ($722,393,592	versus $449,886,513), but our data shows a different result. We can discuss it more tomorrow. 
-#http://www.opensecrets.org/pres12/
+Where does the money come from? The money often does not come from candidate's net worth. A amount of money comes from political action committees. *A political action committee (PAC) is a group formed for the purpose of contributing money to the campaigns of federal politicians.* It can spend money on either electing or on defeating a candidate. In the United States, a political action committee needs to be registered with the Federal Election Commission and spend more than $1,000 for the purpose of influencing a federal election.
+
+We plotted a graph about the amount of large received transaction to support the democratic party and the Republican party. The graph is categorized in terms of the state. During the 2012 election, Barack Obama's home state was Illinois, Mitt Romney's home state was Massachusetts. **We find that Obama and Romney received higher donation in their home state. $28,347,736 in Illinois and $70,528,037 in Massachusetts respectively.** The Republican party won the Democratic party at home state twice as much.
+
+We also plotted a graph illustrating the independent expenditure opposing (24A) /advocating(24E) election of candidate. During 2012 presidential campaign, independent groups have spent millions on television advertisements and other efforts asking voters to elect or defeat candidates. Super PACs, or independent-expenditure only committees, raised unlimited money from individuals, corporations and labor unions. Independent-expenditure only committees make independent expenditures in federal races, such as running ads or sending mail or communicating in other ways with messages that specifically advocate the election or defeat of a specific candidate. Though the Democratic party recevied less donation in 24E type transacitons than the Republican party, it received more 24A type transactions. And the total amount of 24A and 24E transactions given to the Democratic party is more than that of the Republican party. Thus, we can say that during the election, super PACs supporting the Democratic party outspends super PACs supporting the Republican party on television advertisements and other efforts asking voters to defeat candidates. **This fits in our finding that better-financed candidate or parties are more likely to win campaigns.**
 
 
 
