@@ -81,12 +81,27 @@ my_24AE_plot
 Adding those two parts - independent expenditure of oppising and advocating election of candidate - together, democratic pary outweights republic party in terms of fundrising. we confirm our assumption that the more donation a party receives, the more likelihood it will win.
 
 ###Our analysis and bg information:
-**Republic recevied more transactions than Democratic in 2012.**
+**Democratic recevied more transactions than Republic in 2012.**
 In the United States presidential election of 2012, the Democratic nominee, incumbent President Barack Obama was elected to a second term, defeating the Republican nominee, former Governor of Massachusetts Mitt Romney. Intutively, the more transactions given to support elections of a party, the higher chance that the donation can be used to support the party to win the election. However, the nominee of Democratic party, Barack Obama, won the election with less transactions.
 
 
 ### Data Wrangling
 ```{r,message=FALSE}
+#select certain columns, only need the information we want
+#only donsider 24E/24A type transaction
+#calculate total transaction amount given to a candidate
+  contributions_24ae <- contributions %>%
+    filter(transaction_type == "24E" | transaction_type == '24A') %>%
+    select(name,transaction_amt,cand_id,state) %>% 
+    group_by(cand_id) %>% 
+    summarize(total_trans = sum(transaction_amt))
+  
+  
+#join two data frames 
+can_contri_2012 <- candidate_2012 %>% left_join(contributions_24ae, by = 'cand_id')
+#filter out NA values in total_trans
+can_contri_2012 <- can_contri_2012 %>% filter(!is.na(total_trans))
+
 # function that calculates how much transactions did a party receive in each state
 # arrange the data by the amount of transactions
  party_state_trans <- function(input_data,input_party){
@@ -132,7 +147,7 @@ my_plot <- ggplot(G_Party_state, aes(x = Party, y = contributions, fill = Party)
   scale_y_continuous(name='Transactions', labels = scales::comma) +
   scale_x_discrete(name='Party', label = c('DEM', 'REP'))+
   theme(axis.text.x = element_text(angle = 70,hjust = 1))+
-  ggtitle('The Amount of Large Received Transactions to Support Elections by DEM and REP')+
+  ggtitle('The Amount of Large Received Transactions(24A/E) by DEM and REP')+
   facet_wrap(~cand_state, ncol = 10)
 
 my_plot
