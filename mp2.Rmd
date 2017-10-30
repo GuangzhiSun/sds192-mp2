@@ -125,6 +125,10 @@ my_plot
 **Candidates usually received large amount of money in their home states.**
 Barack Obama's(Deomoncratic Candidate) home state was Illinois, while Mitt Romney's(Republican Candidate) home state was Massachusetts. By observing the candidate data frame, we find that Obama and Romney received the highest donation in their home state: Illinois (28347736) and Massachusetts (70528037) respectivcely; and that Republic party won deomate at home state as twice much as democartic party did. This may help to explain that democratic party had less amount of donation in general. We consider that is there any other factors contribute to winning election. Thus, we suppose that the other factors will may be relevant to the election in 2012.
 
+The United States presidential election of 2012 broke new records in fundraising. Through grassroots campaign contributions, online donations, and Super PACs, Obama won significant higher amount of small individual contributions than Romney did. 
+
+#Note: The exact fact is: Obama won more donations than Romney ($722,393,592	versus $449,886,513), but our data shows a different result. We can discuss it more tomorrow. 
+#http://www.opensecrets.org/pres12/
 
 
 
